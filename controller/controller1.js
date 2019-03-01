@@ -1,8 +1,10 @@
 import express from "express";
 const router = express.Router();
-
+import pool from "../config/dbpool";
 router.get("/",async (req,res)=>{
-    res.send("Hello World!");
+    let sql = 'select * from user';
+    let result = await pool.query(sql);
+    res.send(result);
 });
 
 
