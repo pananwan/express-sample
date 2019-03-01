@@ -1,0 +1,29 @@
+{
+  "name": "express-server",
+  "version": "1.0.0",
+  "description": "for traning course ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dasxeriez/express-sample.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dasxeriez/express-sample/issues"
+  },
+  "homepage": "https://github.com/dasxeriez/express-sample#readme",
+  "dependencies": {
+    "babel": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mysql": "^2.16.0",
+    "util.promisify": "^1.0.0"
+  }
+}
