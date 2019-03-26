@@ -4,6 +4,7 @@ import con1 from './controller/controller1.js';
 import * as config from './config/serverconfig'
 
 const app = express();
+
 app.use(bodyParser({
     limit: '50mb'
 }));
@@ -36,7 +37,9 @@ app.all('*', function (req, res, next) {
         next();
     }
 });
-app.use('/test', con1);
+
+app.use('/user', con1);
+
 app.listen(config.port, () => {
     console.log('Start server at port ' + config.port)
 });
