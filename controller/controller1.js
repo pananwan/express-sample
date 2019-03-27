@@ -53,41 +53,74 @@ router.post("/createProfile", async (req, res) => {
     res.send({info: result, info2: result2})
 });
 
+/*
+    Request
+* id : "5721602287"
+* noteId : 1
+* name : "new name"
+* */
 router.post("/updateNoteName", async (req, res) => {
     let info = await db.note_detail.update(
         {id: req.body.id, note_type: {$elemMatch: {noteid: req.body.noteId}}},
-        {$set: {'note_type.name.$': req.body.name}}
+        {$set: {'note_type.$.name': req.body.name}}
     );
-    console.log(info);
-    res.send(info[0]);
+    if (info.nModified == 1) {
+        res.send({success: true});
+    } else {
+        res.send({success: false});
+    }
 });
 
+/*
+    Request
+* id : "5721602287"
+* noteId : 1
+* listId : 1
+* listDetail : "detail"
+* */
 
 router.post("/updateNoteDetail", async (req, res) => {
+    /*console.log(req.body);
+    let info = await db.note_detail.find();
+    console.log(info);*/
+    let detail = {
+        id: req.body.listId,
+        detail: req.body.detail,
+        priority: req.body.priority,
+    };
+
+    let info = await db.note_detail.update(
+        {
+            id: req.body.id,
+            note_type: {$elemMatch: {noteid: req.body.noteId}},
+            //'note_type.$.list': {$elemMatch: {id: req.body.listId,$elemMatch:{}}}
+        },
+        {$set: {'note_type.$.list.$[j].detail': 'Tests'}},
+        //{$set: {'note_type.$.list.$[i]': detail}},
+        {arrayFilters: [{'j.id': req.body.listId}]}
+    );
+
+    res.send(info);
     // let result = await
-})
+});
 
-
-let o = {
-    note_type: [{
-        noteid: 1,
-        name: "ศิลปะxxx",
-        list: [{id: 1, detail: "ข้อมูลทดสอบ", priority: 10}, {id: 2, detail: "ข้อมูลทดสอบ2", priority: 2}]
-    }, {
-        noteid: 2
-        ,
-        name: "การเรียน",
-        list: [{id: 1, detail: "ข้อมูลทดสอบ", priority: 10}, {id: 2, detail: "ข้อมูลทดสอบ2", priority: 2}]
-    }, {noteid: 3, name: "ท่องเที่ยว", list: []}, {noteid: 4, name: "การงาน", list: []}]
+//db.coll.update({}, {$set: {“a.$[i].c.$[j].d”: 2}}, {arrayFilters: [{“i.b”: 0}, {“j.d”: 0}]})
+let Input = {
+    a:
+        [
+            {
+                b: 0,
+                c:
+                    [
+                        {d: 0},
+                        {d: 1}]
+            },
+            {
+                b: 1, c:
+                    [{d: 0},
+                        {d: 1}]
+            }]
 }
-
-/*
-req = {
-    id : // รหัสนิสสิต
-    noteId : // รหัส note
-    noteName : // ชื่อ note
-}
-* */
 router.post("/insertNote", async (req, res) => {
     let result = await db.note_detail.update({id: req.body.id + ''},
         {$push: {'note_type': {noteid: req.body.noteId, name: req.body.noteName, list: []}}});
