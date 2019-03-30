@@ -5,13 +5,10 @@ import testController from './controller/testController.js';
 import * as config from './config/serverconfig'
 
 const app = express();
-app.use(bodyParser({
-    limit: '50mb'
-}));
+app.use(bodyParser({limit: '50mb'}));
 app.use(bodyParser.json()); // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
-    extended: true
-}));
+app.use(bodyParser.urlencoded({extended: true})); // to support URL-encoded bodies
+
 app.all('*', function (req, res, next) {
     /**
      * Response settings
@@ -23,14 +20,20 @@ app.all('*', function (req, res, next) {
         "AccessControlAllowMethods": "POST, GET, PUT, DELETE, OPTIONS",
         "AccessControlAllowCredentials": true
     };
-
     /**
      * Headers
      */
-    res.header("Access-Control-Allow-Credentials", responseSettings.AccessControlAllowCredentials);
-    res.header("Access-Control-Allow-Origin", responseSettings.AccessControlAllowOrigin);
-    res.header("Access-Control-Allow-Headers", (req.headers['access-control-request-headers']) ? req.headers['access-control-request-headers'] : "x-requested-with");
-    res.header("Access-Control-Allow-Methods", (req.headers['access-control-request-method']) ? req.headers['access-control-request-method'] : responseSettings.AccessControlAllowMethods);
+    res.header("Access-Control-Allow-Credentials", 
+    responseSettings.AccessControlAllowCredentials);
+    res.header("Access-Control-Allow-Origin",
+     responseSettings.AccessControlAllowOrigin);
+    res.header("Access-Control-Allow-Headers",
+     (req.headers['access-control-request-headers']) ? 
+     req.headers['access-control-request-headers'] : "x-requested-with");
+    res.header("Access-Control-Allow-Methods",
+     (req.headers['access-control-request-method']) ?
+      req.headers['access-control-request-method'] :
+       responseSettings.AccessControlAllowMethods);
     if ('OPTIONS' == req.method) {
         res.send(200);
     } else {
