@@ -1,19 +1,21 @@
 import express from "express";
 import mongoist from "mongoist";
 import mongojs from "mongojs";
-
 const router = express.Router();
 //import pool from "../config/dbpool";
-// import mongojs from "../config/mongodb";
+//import mongojs from "../config/mongodb";
 const databaseUrl =
   "mongodb://angularku1:angularku1@ds061464.mlab.com:61464/mynote";
 const mongojsDb = mongojs(databaseUrl);
 const db = mongoist(mongojsDb);
-const db2 = mongojs.connect;
 
+/*
+Request
+* id : "5721602287"
+* */
 router.get("/getDetail", async (req, res) => {
-  let userDetail = await db.user_detail.find({ id: req.body.id });
-  let noteDetail = await db.note_detail.find({ id: req.body.id });
+  let userDetail = await db.user_detail.find({ id: req.query.id });
+  let noteDetail = await db.note_detail.find({ id: req.query.id });
   res.send({ user: userDetail, noteDetail: noteDetail });
 });
 /*
@@ -24,18 +26,13 @@ router.get("/getDetail", async (req, res) => {
 router.post("/createProfile", async (req, res) => {
   let data = await db.user_detail.find({ id: req.body.id });
   if (data.length > 0) {
-    res.send(
-      data.map(m => {
-        let v = m;
-        v.isRegis = true;
-        return v;
-      })
-    );
+    res.send({ status: true, user: data });
   } else {
     let user = {
       id: req.body.id,
       name: req.body.name
     };
+
     let note_type = [
       {
         id: 1,
@@ -59,10 +56,12 @@ router.post("/createProfile", async (req, res) => {
         list: []
       }
     ];
+
     let obj = {
       id: user.id,
       note_type: note_type
     };
+
     let result = await db.user_detail.insert(user);
     let result2 = await db.note_detail.insert(obj);
     res.send({ info: result, info2: result2 });
@@ -77,7 +76,7 @@ router.post("/createProfile", async (req, res) => {
 * */
 router.post("/updateNoteName", async (req, res) => {
   let info = await db.note_detail.update(
-    { id: req.body.id, note_type: { $elemMatch: { noteid: req.body.noteId } } },
+    { id: req.body.id, note_type: { $elemMatch: { id: req.body.noteId } } },
     { $set: { "note_type.$.name": req.body.name } }
   );
   if (info.nModified == 1) {
@@ -101,6 +100,10 @@ router.post("/updateNoteDetail", async (req, res) => {
     detail: req.body.listDetail,
     priority: req.body.priority
   };
+  let data = await db.note_detail.find({ id: req.body.id });
+  let indexNote = -1;
+  data[0].note_type.forEach((f, index) => { if (f.id == req.body.noteId) indexNote = index; });
+  let key = 'note_type.' + indexNote + '.list.$';
   let info = await db.note_detail.update(
     {
       id: req.body.id,
@@ -108,7 +111,7 @@ router.post("/updateNoteDetail", async (req, res) => {
       "note_type.list.id": req.body.listId
     },
     {
-      $set: { "note_type.0.list.$": detail }
+      $set: { [key]: detail }
     }
   );
   res.send(info);
@@ -122,7 +125,7 @@ router.post("/updateNoteDetail", async (req, res) => {
 * */
 router.post("/insertNote", async (req, res) => {
   let result = await db.note_detail.update(
-    { id: req.body.id + "" },
+    { id: req.body.id },
     {
       $push: {
         note_type: {

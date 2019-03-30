@@ -1,10 +1,10 @@
 import express from "express";
 import bodyParser from "body-parser";
-import con1 from './controller/controller1.js';
+import userController from './controller/userController.js';
+import testController from './controller/testController.js';
 import * as config from './config/serverconfig'
 
 const app = express();
-
 app.use(bodyParser({
     limit: '50mb'
 }));
@@ -38,7 +38,8 @@ app.all('*', function (req, res, next) {
     }
 });
 
-app.use('/user', con1);
+app.use('/user', userController);
+app.use('/test', testController);
 
 app.listen(config.port, () => {
     console.log('Start server at port ' + config.port)
