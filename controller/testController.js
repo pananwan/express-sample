@@ -24,4 +24,5 @@ router.post("/postData",async  (req, res) => {
     }
     res.send(responseObject);
 });
+
 module.exports = router;
